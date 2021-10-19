@@ -10,7 +10,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 
 private const val TAG: String = "MainActivity"
 
@@ -22,34 +21,25 @@ class MainActivity : AppCompatActivity() {
     private lateinit var prevButton: Button
     private lateinit var questionTextView: TextView
     private var isGameContinue = true
-    private var currentIndex = 0
     private var countCorrectAnswer = 0
-    private val questionBank = listOf(
-        Question(R.string.question_australia, true),
-        Question(R.string.question_oceans, true),
-        Question(R.string.question_africa, false),
-        Question(R.string.question_asia, true)
-    )
-    private val userHaveQuestionAnswer = (questionBank.indices).toMutableList()
+
+    private val quizViewModel: QuizViewModel by lazy {
+        ViewModelProvider(this).get(QuizViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate(Bundle?) called")
         setContentView(R.layout.activity_main)
 
-        val provider: ViewModelProvider = ViewModelProvider(this)
-        val quizViewModel = provider.get(QuizViewModel::class.java)
-        Log.d(TAG, "Got a QuizViewModel: $quizViewModel")
-
         trueButton = findViewById(R.id.true_button)
         falseButton = findViewById(R.id.false_button)
         nextButton = findViewById(R.id.next_button)
         prevButton = findViewById(R.id.prev_button)
         questionTextView = findViewById(R.id.question_text_view)
-        userHaveQuestionAnswer.fill(0)
         updateQuestion()
         questionTextView.setOnClickListener { view: View ->
-            currentIndex = (currentIndex + 1) % questionBank.size
+            quizViewModel.moveToNextQuestion()
             updateQuestion()
         }
         trueButton.setOnClickListener { view: View ->
@@ -59,29 +49,21 @@ class MainActivity : AppCompatActivity() {
             checkAnswer(false)
         }
         nextButton.setOnClickListener { view: View ->
-            currentIndex = if (currentIndex < questionBank.size - 1) {
-                (currentIndex + 1) % questionBank.size
-            } else {
-                questionBank.size - 1
-            }
+            quizViewModel.moveToNextQuestion()
             updateQuestion()
         }
         prevButton.setOnClickListener { view: View ->
-            currentIndex = if (currentIndex > 0) {
-                (currentIndex - 1) % questionBank.size
-            } else {
-                0
-            }
+            quizViewModel.moveToPrevQuestion()
             updateQuestion()
         }
     }
 
     private fun checkAnswer(userAnswer: Boolean) {
         if (isGameContinue) {
-            when (userHaveQuestionAnswer[currentIndex]) {
+            when (quizViewModel.userHaveQuestionAnswer[quizViewModel.currentIndex]) {
                 0 -> {
-                    val correctAnswer = questionBank[currentIndex].answer
-                    userHaveQuestionAnswer[currentIndex] = 1
+                    val correctAnswer = quizViewModel.currentQuestionAnswer
+                    quizViewModel.userHaveQuestionAnswer[quizViewModel.currentIndex] = 1
                     val messageResId = if (userAnswer == correctAnswer) {
                         countCorrectAnswer++
                         R.string.correct_toast
@@ -126,14 +108,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateQuestion() {
         if (isGameContinue) {
-            val questionTextResId = questionBank[currentIndex].textResId
+            val questionTextResId = quizViewModel.currentQuestionText
             questionTextView.setText(questionTextResId)
         }
     }
 
     private fun checkFinishGame() {
-        if (userHaveQuestionAnswer.sum() == questionBank.size) {
-            val result = "Your result answers = ${100 * countCorrectAnswer / questionBank.size}%"
+        if (quizViewModel.userHaveQuestionAnswer.sum() == quizViewModel.getQuestionBankSize) {
+            val result = "Your result answers = ${100 * countCorrectAnswer / quizViewModel.getQuestionBankSize}%"
             Toast.makeText(
                 this,
                 result,
