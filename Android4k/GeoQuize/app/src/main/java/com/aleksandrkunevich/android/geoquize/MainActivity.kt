@@ -20,7 +20,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var nextButton: ImageButton
     private lateinit var prevButton: Button
     private lateinit var questionTextView: TextView
-    private var countCorrectAnswer = 0
 
     private val quizViewModel: QuizViewModel by lazy {
         ViewModelProvider(this).get(QuizViewModel::class.java)
@@ -36,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         nextButton = findViewById(R.id.next_button)
         prevButton = findViewById(R.id.prev_button)
         questionTextView = findViewById(R.id.question_text_view)
+        checkFinishGame()
         updateQuestion()
         questionTextView.setOnClickListener { view: View ->
             quizViewModel.moveToNextQuestion()
@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
                     val correctAnswer = quizViewModel.currentQuestionAnswer
                     quizViewModel.userHaveQuestionAnswer[quizViewModel.currentIndex] = 1
                     val messageResId = if (userAnswer == correctAnswer) {
-                        countCorrectAnswer++
+                        quizViewModel.countCorrectAnswer++
                         R.string.correct_toast
                     } else {
                         R.string.incorrect_toast
@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity() {
     private fun checkFinishGame() {
         if (quizViewModel.userHaveQuestionAnswer.sum() == quizViewModel.getQuestionBankSize) {
             val result =
-                "Your result answers = ${100 * countCorrectAnswer / quizViewModel.getQuestionBankSize}%"
+                "Your result answers = ${100 * quizViewModel.countCorrectAnswer / quizViewModel.getQuestionBankSize}%"
             Toast.makeText(
                 this,
                 result,

@@ -18,6 +18,7 @@ class QuizViewModel : ViewModel() {
     val currentQuestionText: Int
         get() = questionBank[currentIndex].textResId
     var isGameContinue = true
+    var countCorrectAnswer = 0
     fun moveToNextQuestion() {
         currentIndex = if (currentIndex < getQuestionBankSize - 1) {
             currentIndex + 1
