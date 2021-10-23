@@ -63,6 +63,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
             android:contentDescription="@string/next_button_content"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
             android:src="@drawable/arrow_right" />
     </LinearLayout>
 
