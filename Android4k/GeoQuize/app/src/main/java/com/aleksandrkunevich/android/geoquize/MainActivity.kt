@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 
 private const val TAG: String = "MainActivity"
 private const val KEY_INDEX = "keyCurrentIndex"
+private const val REQUEST_CODE_CHEAT = 0
 
 class MainActivity : AppCompatActivity() {
 
@@ -65,7 +66,8 @@ class MainActivity : AppCompatActivity() {
 //            val intentCheatButton = Intent(this, CheatActivity::class.java)
             val answerIsTrue = quizViewModel.currentQuestionAnswer
             val intentCheatButton = CheatActivity.newIntent(this, answerIsTrue, 2)
-            startActivity(intentCheatButton)
+//            startActivity(intentCheatButton)
+            startActivityForResult(intentCheatButton, REQUEST_CODE_CHEAT)
         }
 
         checkFinishGame()

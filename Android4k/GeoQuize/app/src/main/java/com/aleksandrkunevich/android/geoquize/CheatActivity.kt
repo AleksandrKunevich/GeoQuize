@@ -1,5 +1,6 @@
 package com.aleksandrkunevich.android.geoquize
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -8,6 +9,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 
+const val EXTRA_ANSWER_SHOWN = "com.aleksandrkunevich.android.geoquize.answer_shown"
 private const val EXTRA_ANSWER_IS_TRUE = "com.aleksandrkunevich.android.geoquize.answer_is_true"
 private const val EXTRA_COUNT_TEST = "com.aleksandrkunevich.android.geoquize.countTest"
 private lateinit var answerTextView: TextView
@@ -30,7 +32,15 @@ class CheatActivity : AppCompatActivity() {
                 else -> R.string.false_button
             }
             answerTextView.setText(answerText)
+            setAnswerShownResult(true)
         }
+    }
+
+    private fun setAnswerShownResult(isAnswerShown: Boolean) {
+        val data = Intent().apply {
+            putExtra(EXTRA_ANSWER_SHOWN, isAnswerShown)
+        }
+        setResult(Activity.RESULT_OK, data)
     }
 
     // Эта функция позволяетсоздать объект Intent, дополненный дополнениями, необходимыми для CheatActivity.
