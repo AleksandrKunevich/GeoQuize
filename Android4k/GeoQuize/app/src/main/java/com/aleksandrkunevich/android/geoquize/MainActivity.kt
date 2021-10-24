@@ -1,5 +1,6 @@
 package com.aleksandrkunevich.android.geoquize
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -74,17 +75,29 @@ class MainActivity : AppCompatActivity() {
         updateQuestion()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode != Activity.RESULT_OK) {
+            return
+        }
+        if (resultCode == REQUEST_CODE_CHEAT) {
+            quizViewModel.isCheater = data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
+        }
+    }
+
     private fun checkAnswer(userAnswer: Boolean) {
         if (quizViewModel.isGameContinue) {
             when (quizViewModel.userHaveQuestionAnswer[quizViewModel.currentIndex]) {
                 0 -> {
                     val correctAnswer = quizViewModel.currentQuestionAnswer
                     quizViewModel.userHaveQuestionAnswer[quizViewModel.currentIndex] = 1
-                    val messageResId = if (userAnswer == correctAnswer) {
-                        quizViewModel.countCorrectAnswer++
-                        R.string.correct_toast
-                    } else {
-                        R.string.incorrect_toast
+                    val messageResId = when {
+                        quizViewModel.isCheater -> R.string.judgment_toast
+                        userAnswer == correctAnswer -> {
+                            R.string.correct_toast
+                            quizViewModel.countCorrectAnswer++
+                        }
+                        else -> R.string.incorrect_toast
                     }
                     val toast = Toast.makeText(this, messageResId, Toast.LENGTH_SHORT)
                     toast.setGravity(Gravity.CENTER, 0, 400)

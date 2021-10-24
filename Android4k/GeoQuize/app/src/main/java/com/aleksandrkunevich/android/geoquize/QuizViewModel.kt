@@ -13,6 +13,7 @@ class QuizViewModel : ViewModel() {
     val getQuestionBankSize = questionBank.size
     val userHaveQuestionAnswer = mutableListOf(0, 0, 0, 0)
     var currentIndex = 0
+    var isCheater = false
     val currentQuestionAnswer: Boolean
         get() = questionBank[currentIndex].answer
     val currentQuestionText: Int
