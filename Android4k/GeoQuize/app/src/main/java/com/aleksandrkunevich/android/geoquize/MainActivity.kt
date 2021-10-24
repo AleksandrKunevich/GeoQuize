@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 
 private const val TAG: String = "MainActivity"
 private const val KEY_INDEX = "keyCurrentIndex"
+private const val KEY_IS_CHEAT = "keyIsCheat"
 private const val REQUEST_CODE_CHEAT = 0
 
 class MainActivity : AppCompatActivity() {
@@ -32,11 +33,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate(Bundle?) called")
         setContentView(R.layout.activity_main)
 
         val currentIndex = savedInstanceState?.getInt(KEY_INDEX, 0) ?: 0
         quizViewModel.currentIndex = currentIndex
+        val isCheat = savedInstanceState?.getBoolean(KEY_IS_CHEAT, false) ?: false
+        quizViewModel.isCheater = isCheat
 
         trueButton = findViewById(R.id.true_button)
         falseButton = findViewById(R.id.false_button)
@@ -64,11 +66,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         cheatButton.setOnClickListener { view: View ->
-//            val intentCheatButton = Intent(this, CheatActivity::class.java)
-            val answerIsTrue = quizViewModel.currentQuestionAnswer
-            val intentCheatButton = CheatActivity.newIntent(this, answerIsTrue, 2)
+//            val intent = Intent(this, CheatActivity::class.java)
 //            startActivity(intentCheatButton)
-            startActivityForResult(intentCheatButton, REQUEST_CODE_CHEAT)
+            val answerIsTrue = quizViewModel.currentQuestionAnswer
+            val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
+            startActivityForResult(intent, REQUEST_CODE_CHEAT)
         }
 
         checkFinishGame()
@@ -92,16 +94,16 @@ class MainActivity : AppCompatActivity() {
                     val correctAnswer = quizViewModel.currentQuestionAnswer
                     quizViewModel.userHaveQuestionAnswer[quizViewModel.currentIndex] = 1
                     val messageResId = when {
+                        userAnswer == correctAnswer -> R.string.correct_toast
                         quizViewModel.isCheater -> R.string.judgment_toast
-                        userAnswer == correctAnswer -> {
-                            R.string.correct_toast
-                            quizViewModel.countCorrectAnswer++
-                        }
                         else -> R.string.incorrect_toast
                     }
+                    if (userAnswer == correctAnswer)
+                        quizViewModel.countCorrectAnswer++
                     val toast = Toast.makeText(this, messageResId, Toast.LENGTH_SHORT)
                     toast.setGravity(Gravity.CENTER, 0, 400)
                     toast.show()
+                    Log.d(TAG, "MainActivity isCheat = ${quizViewModel.isCheater}")
                 }
                 1 -> Toast.makeText(this, "You get answer in this question", Toast.LENGTH_SHORT)
                     .show()
@@ -112,27 +114,22 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        Log.d("TAG", "onStart() called")
     }
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume() called")
     }
 
     override fun onPause() {
         super.onPause()
-        Log.d(TAG, "onPause() called")
     }
 
     override fun onStop() {
         super.onStop()
-        Log.d(TAG, "onStop() called")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "onDestroy() called")
     }
 
     private fun updateQuestion() {
@@ -158,7 +155,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        Log.d(TAG, "onSaveInstanceState override")
         outState.putInt(KEY_INDEX, quizViewModel.currentIndex)
+        outState.putBoolean(KEY_IS_CHEAT, quizViewModel.isCheater)
     }
 }

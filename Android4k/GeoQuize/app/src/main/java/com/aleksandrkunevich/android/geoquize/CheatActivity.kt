@@ -5,13 +5,14 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 
 const val EXTRA_ANSWER_SHOWN = "com.aleksandrkunevich.android.geoquize.answer_shown"
 private const val EXTRA_ANSWER_IS_TRUE = "com.aleksandrkunevich.android.geoquize.answer_is_true"
-private const val EXTRA_COUNT_TEST = "com.aleksandrkunevich.android.geoquize.countTest"
+private const val TAG = "CheatActivity"
 private lateinit var answerTextView: TextView
 private lateinit var showAnswerButton: Button
 
@@ -39,16 +40,17 @@ class CheatActivity : AppCompatActivity() {
     private fun setAnswerShownResult(isAnswerShown: Boolean) {
         val data = Intent().apply {
             putExtra(EXTRA_ANSWER_SHOWN, isAnswerShown)
+            Log.d(TAG, "EXTRA_ANSWER_SHOWN = $isAnswerShown")
         }
         setResult(Activity.RESULT_OK, data)
+        Log.d(TAG, "data = $data")
     }
 
     // Эта функция позволяетсоздать объект Intent, дополненный дополнениями, необходимыми для CheatActivity.
     companion object {
-        fun newIntent(packageContext: Context, answerIsTrue: Boolean, countTest: Int): Intent {
+        fun newIntent(packageContext: Context, answerIsTrue: Boolean): Intent {
             return Intent(packageContext, CheatActivity::class.java).apply {
                 putExtra(EXTRA_ANSWER_IS_TRUE, answerIsTrue)
-                putExtra(EXTRA_COUNT_TEST, countTest)
             }
         }
     }
