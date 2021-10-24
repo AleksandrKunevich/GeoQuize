@@ -71,6 +71,7 @@ class MainActivity : AppCompatActivity() {
 //            startActivity(intentCheatButton)
             val answerIsTrue = quizViewModel.currentQuestionAnswer
             val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
+            // Проверка на версию SKD
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 val options = ActivityOptions.makeClipRevealAnimation(view, 0, 0, view.width, view.height)
                 startActivityForResult(intent, REQUEST_CODE_CHEAT, options.toBundle())
