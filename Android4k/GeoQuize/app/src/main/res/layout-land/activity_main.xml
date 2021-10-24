@@ -60,6 +60,8 @@
         android:text="@string/next_button"
         android:drawableEnd="@drawable/arrow_right"
         android:drawablePadding="4dp"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
         android:contentDescription="@string/next_button">
     </ImageButton>
 

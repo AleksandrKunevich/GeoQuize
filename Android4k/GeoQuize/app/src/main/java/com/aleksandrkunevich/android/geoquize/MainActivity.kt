@@ -3,7 +3,6 @@ package com.aleksandrkunevich.android.geoquize
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
@@ -82,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         if (resultCode != Activity.RESULT_OK) {
             return
         }
-        if (resultCode == REQUEST_CODE_CHEAT) {
+        if (requestCode == REQUEST_CODE_CHEAT) {
             quizViewModel.isCheater = data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
         }
     }
@@ -94,8 +93,8 @@ class MainActivity : AppCompatActivity() {
                     val correctAnswer = quizViewModel.currentQuestionAnswer
                     quizViewModel.userHaveQuestionAnswer[quizViewModel.currentIndex] = 1
                     val messageResId = when {
-                        userAnswer == correctAnswer -> R.string.correct_toast
                         quizViewModel.isCheater -> R.string.judgment_toast
+                        userAnswer == correctAnswer -> R.string.correct_toast
                         else -> R.string.incorrect_toast
                     }
                     if (userAnswer == correctAnswer)
@@ -103,7 +102,6 @@ class MainActivity : AppCompatActivity() {
                     val toast = Toast.makeText(this, messageResId, Toast.LENGTH_SHORT)
                     toast.setGravity(Gravity.CENTER, 0, 400)
                     toast.show()
-                    Log.d(TAG, "MainActivity isCheat = ${quizViewModel.isCheater}")
                 }
                 1 -> Toast.makeText(this, "You get answer in this question", Toast.LENGTH_SHORT)
                     .show()
