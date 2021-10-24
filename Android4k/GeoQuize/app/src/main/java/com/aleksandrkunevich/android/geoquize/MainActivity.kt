@@ -1,5 +1,6 @@
 package com.aleksandrkunevich.android.geoquize
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -61,7 +62,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         cheatButton.setOnClickListener { view: View ->
-
+            val intentCheatButton = Intent(this, CheatActivity::class.java)
+            startActivity(intentCheatButton)
         }
 
         checkFinishGame()
